@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: user.proto
+// source: user/user.proto
 
 package userGRPC
 
@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	Ping(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingResult, error)
+	Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error)
 }
 
 type userServiceClient struct {
@@ -33,7 +33,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) Ping(ctx context.Context, in *PingMessage, opts ...grpc.CallOption) (*PingResult, error) {
+func (c *userServiceClient) Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error) {
 	out := new(PingResult)
 	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Ping", in, out, opts...)
 	if err != nil {
@@ -46,7 +46,7 @@ func (c *userServiceClient) Ping(ctx context.Context, in *PingMessage, opts ...g
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	Ping(context.Context, *PingMessage) (*PingResult, error)
+	Ping(context.Context, *PingInput) (*PingResult, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -54,7 +54,7 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
-func (UnimplementedUserServiceServer) Ping(context.Context, *PingMessage) (*PingResult, error) {
+func (UnimplementedUserServiceServer) Ping(context.Context, *PingInput) (*PingResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -71,7 +71,7 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 }
 
 func _UserService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PingMessage)
+	in := new(PingInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func _UserService_Ping_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/userGRPC.UserService/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Ping(ctx, req.(*PingMessage))
+		return srv.(UserServiceServer).Ping(ctx, req.(*PingInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -101,5 +101,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "user.proto",
+	Metadata: "user/user.proto",
 }
