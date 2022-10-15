@@ -5,10 +5,21 @@ package userGRPC;
 option go_package = "github.com/quangtran88/anifni-grpc/userGRPC";
 
 message PingInput {}
+
 message PingResult {
   string message = 1;
 }
 
+message GetUserInput {
+  string id = 1;
+}
+
+message GetUserResult {
+  string id = 1;
+  string name = 2;
+}
+
 service UserService {
   rpc Ping(PingInput) returns (PingResult) {};
+  rpc GetUser(GetUserInput) returns (GetUserResult) {};
 }
