@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package otpGRPC;
+
+option go_package = "github.com/quangtran88/anifni-grpc/otpGRPC";
+
+message CheckEmailOTPInput {
+  string code = 1;
+  string email = 2;
+}
+message CheckEmailOTPResult {
+  bool ok = 1;
+}
+
+message SendEmailOTPInput {
+  string email = 1;
+}
+message SendEmailOTPResult {
+  bool ok = 1;
+}
+
+service OTPService {
+  rpc CheckEmailOTP (CheckEmailOTPInput) returns (CheckEmailOTPResult) {};
+  rpc SendEmailOTP (SendEmailOTPInput) returns (SendEmailOTPResult) {};
+}
