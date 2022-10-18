@@ -23,7 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error)
-	GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*GetUserResult, error)
+	GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error)
+	Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error)
 }
 
 type userServiceClient struct {
@@ -36,16 +37,25 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error) {
 	out := new(PingResult)
-	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*GetUserResult, error) {
-	out := new(GetUserResult)
-	err := c.cc.Invoke(ctx, "/userGRPC.UserService/GetUser", in, out, opts...)
+func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error) {
+	out := new(UserResult)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/getUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error) {
+	out := new(UserResult)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +67,8 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserInput, opts 
 // for forward compatibility
 type UserServiceServer interface {
 	Ping(context.Context, *PingInput) (*PingResult, error)
-	GetUser(context.Context, *GetUserInput) (*GetUserResult, error)
+	GetUser(context.Context, *GetUserInput) (*UserResult, error)
+	Register(context.Context, *RegisterInput) (*UserResult, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -68,8 +79,11 @@ type UnimplementedUserServiceServer struct {
 func (UnimplementedUserServiceServer) Ping(context.Context, *PingInput) (*PingResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserInput) (*GetUserResult, error) {
+func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserInput) (*UserResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUserServiceServer) Register(context.Context, *RegisterInput) (*UserResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -94,7 +108,7 @@ func _UserService_Ping_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGRPC.UserService/Ping",
+		FullMethod: "/userGRPC.UserService/ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Ping(ctx, req.(*PingInput))
@@ -112,10 +126,28 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGRPC.UserService/GetUser",
+		FullMethod: "/userGRPC.UserService/getUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUser(ctx, req.(*GetUserInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userGRPC.UserService/register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Register(ctx, req.(*RegisterInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,12 +160,16 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Ping",
+			MethodName: "ping",
 			Handler:    _UserService_Ping_Handler,
 		},
 		{
-			MethodName: "GetUser",
+			MethodName: "getUser",
 			Handler:    _UserService_GetUser_Handler,
+		},
+		{
+			MethodName: "register",
+			Handler:    _UserService_Register_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

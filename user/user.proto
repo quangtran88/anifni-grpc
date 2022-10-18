@@ -14,12 +14,24 @@ message GetUserInput {
   string id = 1;
 }
 
-message GetUserResult {
-  string id = 1;
-  string name = 2;
+message RegisterInput {
+  string otpCode = 1;
+  string email = 2;
+  string password = 3;
+  string lastName = 4;
+  string firstName = 5;
+}
+
+message UserResult {
+  string pid = 1;
+  string email = 2;
+  string name = 3;
+  string lastName = 4;
+  string firstName = 5;
 }
 
 service UserService {
-  rpc Ping(PingInput) returns (PingResult) {};
-  rpc GetUser(GetUserInput) returns (GetUserResult) {};
+  rpc ping(PingInput) returns (PingResult) {};
+  rpc getUser(GetUserInput) returns (UserResult) {};
+  rpc register(RegisterInput) returns (UserResult) {};
 }
