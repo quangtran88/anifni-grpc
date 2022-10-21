@@ -23,8 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error)
-	GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error)
-	Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error)
+	Get(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error)
+	Create(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error)
+	CheckDuplicated(ctx context.Context, in *CheckDuplicatedUserInput, opts ...grpc.CallOption) (*CheckDuplicatedUserResult, error)
 }
 
 type userServiceClient struct {
@@ -37,25 +38,34 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error) {
 	out := new(PingResult)
-	err := c.cc.Invoke(ctx, "/userGRPC.UserService/ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error) {
+func (c *userServiceClient) Get(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error) {
 	out := new(UserResult)
-	err := c.cc.Invoke(ctx, "/userGRPC.UserService/getUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error) {
+func (c *userServiceClient) Create(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error) {
 	out := new(UserResult)
-	err := c.cc.Invoke(ctx, "/userGRPC.UserService/register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CheckDuplicated(ctx context.Context, in *CheckDuplicatedUserInput, opts ...grpc.CallOption) (*CheckDuplicatedUserResult, error) {
+	out := new(CheckDuplicatedUserResult)
+	err := c.cc.Invoke(ctx, "/userGRPC.UserService/CheckDuplicated", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +77,9 @@ func (c *userServiceClient) Register(ctx context.Context, in *RegisterInput, opt
 // for forward compatibility
 type UserServiceServer interface {
 	Ping(context.Context, *PingInput) (*PingResult, error)
-	GetUser(context.Context, *GetUserInput) (*UserResult, error)
-	Register(context.Context, *RegisterInput) (*UserResult, error)
+	Get(context.Context, *GetUserInput) (*UserResult, error)
+	Create(context.Context, *RegisterInput) (*UserResult, error)
+	CheckDuplicated(context.Context, *CheckDuplicatedUserInput) (*CheckDuplicatedUserResult, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -79,11 +90,14 @@ type UnimplementedUserServiceServer struct {
 func (UnimplementedUserServiceServer) Ping(context.Context, *PingInput) (*PingResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserInput) (*UserResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+func (UnimplementedUserServiceServer) Get(context.Context, *GetUserInput) (*UserResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedUserServiceServer) Register(context.Context, *RegisterInput) (*UserResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+func (UnimplementedUserServiceServer) Create(context.Context, *RegisterInput) (*UserResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedUserServiceServer) CheckDuplicated(context.Context, *CheckDuplicatedUserInput) (*CheckDuplicatedUserResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckDuplicated not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -108,7 +122,7 @@ func _UserService_Ping_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGRPC.UserService/ping",
+		FullMethod: "/userGRPC.UserService/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Ping(ctx, req.(*PingInput))
@@ -116,38 +130,56 @@ func _UserService_Ping_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetUser(ctx, in)
+		return srv.(UserServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGRPC.UserService/getUser",
+		FullMethod: "/userGRPC.UserService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUser(ctx, req.(*GetUserInput))
+		return srv.(UserServiceServer).Get(ctx, req.(*GetUserInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).Register(ctx, in)
+		return srv.(UserServiceServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userGRPC.UserService/register",
+		FullMethod: "/userGRPC.UserService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Register(ctx, req.(*RegisterInput))
+		return srv.(UserServiceServer).Create(ctx, req.(*RegisterInput))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CheckDuplicated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckDuplicatedUserInput)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckDuplicated(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userGRPC.UserService/CheckDuplicated",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckDuplicated(ctx, req.(*CheckDuplicatedUserInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,16 +192,20 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ping",
+			MethodName: "Ping",
 			Handler:    _UserService_Ping_Handler,
 		},
 		{
-			MethodName: "getUser",
-			Handler:    _UserService_GetUser_Handler,
+			MethodName: "Get",
+			Handler:    _UserService_Get_Handler,
 		},
 		{
-			MethodName: "register",
-			Handler:    _UserService_Register_Handler,
+			MethodName: "Create",
+			Handler:    _UserService_Create_Handler,
+		},
+		{
+			MethodName: "CheckDuplicated",
+			Handler:    _UserService_CheckDuplicated_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

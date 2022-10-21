@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package otpGRPC;
+package authGRPC;
 
-option go_package = "github.com/quangtran88/anifni-grpc/otpGRPC";
+option go_package = "github.com/quangtran88/anifni-grpc/authGRPC";
 
 message CheckEmailOTPInput {
   string code = 1;

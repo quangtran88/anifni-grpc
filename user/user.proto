@@ -30,8 +30,17 @@ message UserResult {
   string firstName = 5;
 }
 
+message CheckDuplicatedUserInput {
+  string email = 1;
+}
+
+message CheckDuplicatedUserResult {
+  bool ok = 1;
+}
+
 service UserService {
-  rpc ping(PingInput) returns (PingResult) {};
-  rpc getUser(GetUserInput) returns (UserResult) {};
-  rpc register(RegisterInput) returns (UserResult) {};
+  rpc Ping (PingInput) returns (PingResult) {};
+  rpc Get (GetUserInput) returns (UserResult) {};
+  rpc Create (RegisterInput) returns (UserResult) {};
+  rpc CheckDuplicated (CheckDuplicatedUserInput) returns (CheckDuplicatedUserResult) {};
 }

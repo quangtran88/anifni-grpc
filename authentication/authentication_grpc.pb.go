@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: authentication/otp.proto
+// source: authentication/authentication.proto
 
-package otpGRPC
+package authGRPC
 
 import (
 	context "context"
@@ -36,7 +36,7 @@ func NewOTPServiceClient(cc grpc.ClientConnInterface) OTPServiceClient {
 
 func (c *oTPServiceClient) CheckEmailOTP(ctx context.Context, in *CheckEmailOTPInput, opts ...grpc.CallOption) (*CheckEmailOTPResult, error) {
 	out := new(CheckEmailOTPResult)
-	err := c.cc.Invoke(ctx, "/otpGRPC.OTPService/CheckEmailOTP", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authGRPC.OTPService/CheckEmailOTP", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *oTPServiceClient) CheckEmailOTP(ctx context.Context, in *CheckEmailOTPI
 
 func (c *oTPServiceClient) SendEmailOTP(ctx context.Context, in *SendEmailOTPInput, opts ...grpc.CallOption) (*SendEmailOTPResult, error) {
 	out := new(SendEmailOTPResult)
-	err := c.cc.Invoke(ctx, "/otpGRPC.OTPService/SendEmailOTP", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/authGRPC.OTPService/SendEmailOTP", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func _OTPService_CheckEmailOTP_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/otpGRPC.OTPService/CheckEmailOTP",
+		FullMethod: "/authGRPC.OTPService/CheckEmailOTP",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OTPServiceServer).CheckEmailOTP(ctx, req.(*CheckEmailOTPInput))
@@ -112,7 +112,7 @@ func _OTPService_SendEmailOTP_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/otpGRPC.OTPService/SendEmailOTP",
+		FullMethod: "/authGRPC.OTPService/SendEmailOTP",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OTPServiceServer).SendEmailOTP(ctx, req.(*SendEmailOTPInput))
@@ -124,7 +124,7 @@ func _OTPService_SendEmailOTP_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OTPService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "otpGRPC.OTPService",
+	ServiceName: "authGRPC.OTPService",
 	HandlerType: (*OTPServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -137,5 +137,5 @@ var OTPService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "authentication/otp.proto",
+	Metadata: "authentication/authentication.proto",
 }
