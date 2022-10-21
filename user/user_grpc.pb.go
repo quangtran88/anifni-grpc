@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	Ping(ctx context.Context, in *PingInput, opts ...grpc.CallOption) (*PingResult, error)
 	Get(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*UserResult, error)
-	Create(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error)
+	Create(ctx context.Context, in *CreateUserInput, opts ...grpc.CallOption) (*UserResult, error)
 	CheckDuplicated(ctx context.Context, in *CheckDuplicatedUserInput, opts ...grpc.CallOption) (*CheckDuplicatedUserResult, error)
 }
 
@@ -54,7 +54,7 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetUserInput, opts ...g
 	return out, nil
 }
 
-func (c *userServiceClient) Create(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*UserResult, error) {
+func (c *userServiceClient) Create(ctx context.Context, in *CreateUserInput, opts ...grpc.CallOption) (*UserResult, error) {
 	out := new(UserResult)
 	err := c.cc.Invoke(ctx, "/userGRPC.UserService/Create", in, out, opts...)
 	if err != nil {
@@ -78,7 +78,7 @@ func (c *userServiceClient) CheckDuplicated(ctx context.Context, in *CheckDuplic
 type UserServiceServer interface {
 	Ping(context.Context, *PingInput) (*PingResult, error)
 	Get(context.Context, *GetUserInput) (*UserResult, error)
-	Create(context.Context, *RegisterInput) (*UserResult, error)
+	Create(context.Context, *CreateUserInput) (*UserResult, error)
 	CheckDuplicated(context.Context, *CheckDuplicatedUserInput) (*CheckDuplicatedUserResult, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -93,7 +93,7 @@ func (UnimplementedUserServiceServer) Ping(context.Context, *PingInput) (*PingRe
 func (UnimplementedUserServiceServer) Get(context.Context, *GetUserInput) (*UserResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedUserServiceServer) Create(context.Context, *RegisterInput) (*UserResult, error) {
+func (UnimplementedUserServiceServer) Create(context.Context, *CreateUserInput) (*UserResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedUserServiceServer) CheckDuplicated(context.Context, *CheckDuplicatedUserInput) (*CheckDuplicatedUserResult, error) {
@@ -149,7 +149,7 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RegisterInput)
+	in := new(CreateUserInput)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/userGRPC.UserService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Create(ctx, req.(*RegisterInput))
+		return srv.(UserServiceServer).Create(ctx, req.(*CreateUserInput))
 	}
 	return interceptor(ctx, in, info, handler)
 }

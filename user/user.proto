@@ -14,8 +14,8 @@ message GetUserInput {
   string id = 1;
 }
 
-message RegisterInput {
-  string otpCode = 1;
+message CreateUserInput {
+  string pid = 1;
   string email = 2;
   string password = 3;
   string lastName = 4;
@@ -41,6 +41,6 @@ message CheckDuplicatedUserResult {
 service UserService {
   rpc Ping (PingInput) returns (PingResult) {};
   rpc Get (GetUserInput) returns (UserResult) {};
-  rpc Create (RegisterInput) returns (UserResult) {};
+  rpc Create (CreateUserInput) returns (UserResult) {};
   rpc CheckDuplicated (CheckDuplicatedUserInput) returns (CheckDuplicatedUserResult) {};
 }
