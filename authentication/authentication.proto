@@ -12,14 +12,6 @@ message CheckEmailOTPResult {
   bool ok = 1;
 }
 
-message SendEmailOTPInput {
-  string email = 1;
-}
-message SendEmailOTPResult {
-  bool ok = 1;
-}
-
 service OTPService {
   rpc CheckEmailOTP (CheckEmailOTPInput) returns (CheckEmailOTPResult) {};
-  rpc SendEmailOTP (SendEmailOTPInput) returns (SendEmailOTPResult) {};
 }

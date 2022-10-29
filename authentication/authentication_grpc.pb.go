@@ -23,7 +23,6 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OTPServiceClient interface {
 	CheckEmailOTP(ctx context.Context, in *CheckEmailOTPInput, opts ...grpc.CallOption) (*CheckEmailOTPResult, error)
-	SendEmailOTP(ctx context.Context, in *SendEmailOTPInput, opts ...grpc.CallOption) (*SendEmailOTPResult, error)
 }
 
 type oTPServiceClient struct {
@@ -43,21 +42,11 @@ func (c *oTPServiceClient) CheckEmailOTP(ctx context.Context, in *CheckEmailOTPI
 	return out, nil
 }
 
-func (c *oTPServiceClient) SendEmailOTP(ctx context.Context, in *SendEmailOTPInput, opts ...grpc.CallOption) (*SendEmailOTPResult, error) {
-	out := new(SendEmailOTPResult)
-	err := c.cc.Invoke(ctx, "/authGRPC.OTPService/SendEmailOTP", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // OTPServiceServer is the server API for OTPService service.
 // All implementations must embed UnimplementedOTPServiceServer
 // for forward compatibility
 type OTPServiceServer interface {
 	CheckEmailOTP(context.Context, *CheckEmailOTPInput) (*CheckEmailOTPResult, error)
-	SendEmailOTP(context.Context, *SendEmailOTPInput) (*SendEmailOTPResult, error)
 	mustEmbedUnimplementedOTPServiceServer()
 }
 
@@ -67,9 +56,6 @@ type UnimplementedOTPServiceServer struct {
 
 func (UnimplementedOTPServiceServer) CheckEmailOTP(context.Context, *CheckEmailOTPInput) (*CheckEmailOTPResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckEmailOTP not implemented")
-}
-func (UnimplementedOTPServiceServer) SendEmailOTP(context.Context, *SendEmailOTPInput) (*SendEmailOTPResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendEmailOTP not implemented")
 }
 func (UnimplementedOTPServiceServer) mustEmbedUnimplementedOTPServiceServer() {}
 
@@ -102,24 +88,6 @@ func _OTPService_CheckEmailOTP_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OTPService_SendEmailOTP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendEmailOTPInput)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OTPServiceServer).SendEmailOTP(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/authGRPC.OTPService/SendEmailOTP",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OTPServiceServer).SendEmailOTP(ctx, req.(*SendEmailOTPInput))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // OTPService_ServiceDesc is the grpc.ServiceDesc for OTPService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,10 +98,6 @@ var OTPService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckEmailOTP",
 			Handler:    _OTPService_CheckEmailOTP_Handler,
-		},
-		{
-			MethodName: "SendEmailOTP",
-			Handler:    _OTPService_SendEmailOTP_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
